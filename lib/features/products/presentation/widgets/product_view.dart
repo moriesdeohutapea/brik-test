@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/product_bloc.dart';
 import '../bloc/product_state.dart';
+import '../pages/product_detail_page.dart';
 
 class ProductView extends StatelessWidget {
   const ProductView({super.key});
@@ -22,6 +23,14 @@ class ProductView extends StatelessWidget {
                 title: Text(product.name),
                 subtitle: Text(product.category),
                 trailing: Text('\$${product.price}'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(product: product),
+                    ),
+                  );
+                },
               );
             },
           );

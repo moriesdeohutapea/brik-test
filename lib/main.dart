@@ -1,4 +1,4 @@
-import 'package:brik_test/features/products/presentation/pages/dashboard.dart';
+import 'package:brik_test/features/products/presentation/pages/product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
