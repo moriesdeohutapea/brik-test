@@ -89,7 +89,7 @@ class ProductPage extends StatelessWidget {
                   category: categoryController.text,
                   description: descriptionController.text,
                   stock: int.tryParse(stockController.text) ?? 0,
-                  imageUrl: imageUrlController.text,
+                  imageUrl: imageUrlController.text.isEmpty ? 'https://bogorcoklat.com/wp-content/uploads/2019/01/coklat-hadiah-valentine.jpeg' : imageUrlController.text,
                 );
 
                 context.read<ProductBloc>().add(CreateProductEvent(product));
