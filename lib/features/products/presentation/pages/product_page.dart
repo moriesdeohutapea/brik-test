@@ -15,6 +15,10 @@ class ProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: const Text('Mories Deo Technical Test'),
+      ),
       body: SafeArea(
         child: BlocProvider(
           create: (_) => ProductBloc()..add(FetchProducts(1)),
@@ -90,7 +94,9 @@ class ProductPage extends StatelessWidget {
                   category: categoryController.text,
                   description: descriptionController.text,
                   stock: int.tryParse(stockController.text) ?? 0,
-                  imageUrl: imageUrlController.text.isEmpty ? 'https://bogorcoklat.com/wp-content/uploads/2019/01/coklat-hadiah-valentine.jpeg' : imageUrlController.text,
+                  imageUrl: imageUrlController.text.isEmpty
+                      ? 'https://bogorcoklat.com/wp-content/uploads/2019/01/coklat-hadiah-valentine.jpeg'
+                      : imageUrlController.text,
                 );
 
                 context.read<ProductBloc>().add(CreateProductEvent(product));
@@ -108,8 +114,8 @@ class ProductPage extends StatelessWidget {
 
     for (int i = 0; i < count; i++) {
       final product = Product(
-        id: random.nextInt(10000).toString(),
-        name: 'Product ${random.nextInt(1000)}',
+        id: random.nextInt(100).toString(),
+        name: 'Product ${random.nextInt(100)}',
         price: random.nextInt(500),
         category: 'Category ${random.nextInt(5) + 1}',
         description: 'This is a random product description ${random.nextInt(100)}',
