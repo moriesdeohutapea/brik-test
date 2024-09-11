@@ -15,11 +15,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   int _currentPage = 1;
   final int _perPage = 10;
   bool _hasReachedMax = false;
+  final List<Product> _allProducts = [];
 
   ProductBloc() : super(ProductInitial()) {
     on<FetchProducts>(_onFetchProducts);
     on<CreateProductEvent>(_onCreateProduct);
     on<DeleteAllProductsEvent>(_onDeleteAllProducts);
+    on<SearchProductsEvent>(_onSearchProducts);
   }
 
   Future<void> _onFetchProducts(FetchProducts event, Emitter<ProductState> emit) async {
@@ -31,6 +33,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     try {
       final products = await getProductsUseCase(GetProductsParams(page: event.page, perPage: _perPage));
       _hasReachedMax = products.length < _perPage;
+
+      if (event.page == 1) {
+        _allProducts.clear();
+      }
+      _allProducts.addAll(products);
+
       if (state is ProductLoaded && event.page != 1) {
         final updatedProducts = List<Product>.from((state as ProductLoaded).products)..addAll(products);
         emit(ProductLoaded(updatedProducts, hasReachedMax: _hasReachedMax));
@@ -50,6 +58,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     emit(ProductLoading());
     try {
       final product = await createProductUseCase(event.product);
+      _allProducts.add(product);
       emit(ProductCreated(product));
     } catch (e) {
       if (e is ServerException) {
@@ -62,7 +71,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   Future<void> _onDeleteAllProducts(DeleteAllProductsEvent event, Emitter<ProductState> emit) async {
     emit(ProductLoading());
+    _allProducts.clear();
     emit(ProductLoaded([], hasReachedMax: true));
+  }
+
+  void _onSearchProducts(SearchProductsEvent event, Emitter<ProductState> emit) {
+    if (event.query.isEmpty) {
+      emit(ProductLoaded(List.from(_allProducts), hasReachedMax: _hasReachedMax));
+    } else {
+      final results = _allProducts.where((product) => product.name.toLowerCase().contains(event.query.toLowerCase())).toList();
+      emit(ProductLoaded(results, hasReachedMax: _hasReachedMax));
+    }
   }
 
   void _resetPagination() {
