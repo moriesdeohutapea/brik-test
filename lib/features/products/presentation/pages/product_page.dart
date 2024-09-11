@@ -14,6 +14,7 @@ class ProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: BlocProvider(
           create: (_) => ProductBloc()..add(FetchProducts(1)),
