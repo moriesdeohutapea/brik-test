@@ -25,11 +25,12 @@ class _ProductViewState extends State<ProductView> {
   }
 
   void _loadInitialProducts() {
+    _currentPage = 1;
     context.read<ProductBloc>().add(FetchProducts(_currentPage));
   }
 
   void _onScroll() {
-    if (_isBottom) {
+    if (_isBottom && !(context.read<ProductBloc>().state is ProductLoading)) {
       _currentPage++;
       context.read<ProductBloc>().add(FetchProducts(_currentPage));
     }
