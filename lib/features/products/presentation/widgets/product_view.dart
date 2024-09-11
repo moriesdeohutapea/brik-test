@@ -2,22 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/product_bloc.dart';
+import '../bloc/product_event.dart';
 import '../bloc/product_state.dart';
 import '../pages/product_detail_page.dart';
 
-class ProductView extends StatelessWidget {
+class ProductView extends StatefulWidget {
   const ProductView({super.key});
+
+  @override
+  _ProductViewState createState() => _ProductViewState();
+}
+
+class _ProductViewState extends State<ProductView> {
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    _loadInitialProducts();
+  }
+
+  void _loadInitialProducts() {
+    context.read<ProductBloc>().add(FetchProducts(_currentPage));
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      _currentPage++;
+      context.read<ProductBloc>().add(FetchProducts(_currentPage));
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    return currentScroll >= (maxScroll * 0.9);
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProductBloc, ProductState>(
       builder: (context, state) {
-        if (state is ProductLoading) {
+        if (state is ProductLoading && _currentPage == 1) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ProductLoaded) {
           return ListView.builder(
-            itemCount: state.products.length,
+            controller: _scrollController,
+            itemCount: state.hasReachedMax ? state.products.length : state.products.length + 1,
             itemBuilder: (context, index) {
+              if (index >= state.products.length) {
+                return const Center(child: CircularProgressIndicator());
+              }
               final product = state.products[index];
               return ListTile(
                 title: Text(product.name),
@@ -42,5 +80,11 @@ class ProductView extends StatelessWidget {
         return const Center(child: Text('No products available.'));
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

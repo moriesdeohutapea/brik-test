@@ -19,17 +19,28 @@ class ProductRemoteDataSource {
     try {
       final response = await dio.post('/products', data: product.toJson());
       return BaseResponse<Product>.fromJson(
-        response.data,
+        {
+          'statusCode': response.statusCode,
+          'message': 'Product created successfully',
+          'data': response.data,
+        },
         (data) => Product.fromJson(data as Map<String, dynamic>),
       );
     } on DioException catch (e) {
-      throw ServerException('Failed to create product: ${e.message}');
+      throw ServerException('Failed to create product: ${e.response?.data['message'] ?? e.message}');
     }
   }
 
-  Future<BaseResponse<List<Product>>> getProducts() async {
+  Future<BaseResponse<List<Product>>> getProducts({required int page, required int perPage}) async {
     try {
-      final response = await dio.get('/products');
+      final response = await dio.get(
+        '/products',
+        queryParameters: {
+          'page': page,
+          'perPage': perPage,
+        },
+      );
+
       return BaseResponse<List<Product>>.fromJson(
         {
           'statusCode': response.statusCode,
@@ -39,7 +50,15 @@ class ProductRemoteDataSource {
         (data) => (data as List<dynamic>).map((item) => Product.fromJson(item as Map<String, dynamic>)).toList(),
       );
     } on DioException catch (e) {
-      throw ServerException('Failed to fetch products: ${e.message}');
+      throw ServerException('Failed to fetch products: ${e.response?.data['message'] ?? e.message}');
+    }
+  }
+
+  Future<void> deleteProduct(String productId) async {
+    try {
+      await dio.delete('/products/$productId');
+    } on DioException catch (e) {
+      throw ServerException('Failed to delete product: ${e.response?.data['message'] ?? e.message}');
     }
   }
 }

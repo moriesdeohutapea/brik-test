@@ -10,7 +10,7 @@ final getIt = GetIt.instance;
 
 void setupLocator() {
   getIt.registerLazySingleton<Dio>(
-    () => Dio(BaseOptions(baseUrl: 'https://crudcrud.com/api/51fc81509d654c27b4c338a863730ee6')),
+    () => Dio(BaseOptions(baseUrl: 'https://crudcrud.com/api/a6e422a812e74708ba6684a383c85e3c')),
   );
 
   getIt.registerLazySingleton<ProductRemoteDataSource>(

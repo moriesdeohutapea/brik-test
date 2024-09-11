@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import '../../domain/entities/entities.dart';
 
 abstract class ProductState {}
@@ -24,18 +26,24 @@ class ProductLoading extends ProductState {
 
 class ProductLoaded extends ProductState {
   final List<Product> products;
+  final bool hasReachedMax;
 
-  ProductLoaded(this.products);
+  ProductLoaded(this.products, {this.hasReachedMax = false});
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is ProductLoaded && other.products == products;
+    return other is ProductLoaded &&
+        const ListEquality().equals(other.products, products) &&
+        other.hasReachedMax == hasReachedMax;
   }
 
   @override
-  int get hashCode => products.hashCode;
+  int get hashCode => Object.hash(
+        const ListEquality().hash(products),
+        hasReachedMax,
+      );
 }
 
 class ProductError extends ProductState {

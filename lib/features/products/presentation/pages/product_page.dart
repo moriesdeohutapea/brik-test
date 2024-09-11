@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,7 +16,7 @@ class ProductPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: BlocProvider(
-          create: (_) => ProductBloc()..add(FetchProducts()),
+          create: (_) => ProductBloc()..add(FetchProducts(1)),
           child: const ProductView(),
         ),
       ),
@@ -98,5 +100,27 @@ class ProductPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _addRandomProducts(BuildContext context, {int count = 2}) {
+    final random = Random();
+
+    for (int i = 0; i < count; i++) {
+      final product = Product(
+        id: random.nextInt(10000).toString(),
+        name: 'Product ${random.nextInt(1000)}',
+        price: random.nextInt(500),
+        category: 'Category ${random.nextInt(5) + 1}',
+        description: 'This is a random product description ${random.nextInt(100)}',
+        stock: random.nextInt(100),
+        imageUrl: 'https://bogorcoklat.com/wp-content/uploads/2019/01/coklat-hadiah-valentine.jpeg',
+      );
+
+      context.read<ProductBloc>().add(CreateProductEvent(product));
+    }
+  }
+
+  void deleteAllProducts(BuildContext context) {
+    context.read<ProductBloc>().add(DeleteAllProductsEvent());
   }
 }

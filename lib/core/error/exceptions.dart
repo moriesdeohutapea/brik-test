@@ -1,7 +1,10 @@
 class ServerException implements Exception {
   final String message;
 
-  ServerException([this.message = 'An error occurred on the server']);
+  ServerException(this.message);
+
+  @override
+  String toString() => message;
 }
 
 class CacheException implements Exception {

@@ -2,7 +2,11 @@ import '../../domain/entities/entities.dart';
 
 abstract class ProductEvent {}
 
-class FetchProducts extends ProductEvent {}
+class FetchProducts extends ProductEvent {
+  final int page;
+
+  FetchProducts(this.page);
+}
 
 class CreateProductEvent extends ProductEvent {
   final Product product;
@@ -19,3 +23,5 @@ class CreateProductEvent extends ProductEvent {
   @override
   int get hashCode => product.hashCode;
 }
+
+class DeleteAllProductsEvent extends ProductEvent {}
